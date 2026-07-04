@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0F0F1A" />
+<title>sabashift</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="newicon.png" />
+<link rel="icon" type="image/png" href="newicon.png" />
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+:root{
+  --primary:#6C63FF; --primary-d:#5850e6; --secondary:#10B981; --accent:#F59E0B;
+  --bg:#0F0F1A; --card:#1A1A2E; --border:rgba(255,255,255,0.05);
+  --text:#EEF0F6; --muted:#9AA0B4; --danger:#EF4444;
+  --radius:18px; --shadow:0 8px 30px rgba(0,0,0,.45);
+  --header-h:64px; --nav-h:66px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Vazirmatn',system-ui,'Segoe UI',Tahoma,sans-serif;
+  background:var(--bg);color:var(--text);
+  overflow-x:hidden;line-height:1.7;
+  -webkit-user-select:none;user-select:none;
+  padding-top:calc(var(--header-h) + env(safe-area-inset-top));
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom));
+}
+body::before{content:'';position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(45% 40% at 15% 10%, rgba(108,99,255,.18), transparent 60%),
+    radial-gradient(45% 40% at 90% 20%, rgba(16,185,129,.14), transparent 60%),
+    radial-gradient(50% 45% at 60% 100%, rgba(245,158,11,.10), transparent 60%);}
+
+.appbar{position:fixed;top:0;left:0;right:0;height:calc(var(--header-h) + env(safe-area-inset-top));
+  padding-top:env(safe-area-inset-top);
+  display:flex;align-items:center;gap:12px;padding-inline:14px;z-index:50;
+  background:rgba(15,15,26,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border)}
+.appbar .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));box-shadow:0 6px 16px rgba(108,99,255,.4)}
+.appbar .logo img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.appbar h1{font-size:18px;font-weight:800;letter-spacing:.3px}
+.appbar .date{font-size:11px;color:var(--muted);font-weight:500}
+.appbar .spacer{flex:1}
+.icon-btn{width:42px;height:42px;border:none;background:transparent;color:var(--text);border-radius:50%;
+  font-size:18px;display:grid;place-items:center;position:relative;overflow:hidden;cursor:pointer}
+.back-btn{display:none}
+body.subpage .back-btn{display:grid}
+body.subpage .appbar .titlewrap .date{display:none}
+
+main{padding:16px 14px 8px;max-width:640px;margin:0 auto;padding-bottom:120px}
+.view{display:none;animation:fade .35s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+
+.glass{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
+  border:1px solid var(--border);border-radius:var(--radius);backdrop-filter:blur(8px);box-shadow:var(--shadow)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.stat{padding:14px 10px;border-radius:16px;text-align:center;position:relative;overflow:hidden}
+.stat .n{font-size:24px;font-weight:800}
+.stat .l{font-size:11px;color:var(--muted);margin-top:2px}
+.stat i{font-size:16px;opacity:.9;margin-bottom:6px;display:block}
+.stat.p{background:linear-gradient(135deg,rgba(108,99,255,.25),rgba(108,99,255,.06))}
+.stat.s{background:linear-gradient(135deg,rgba(16,185,129,.25),rgba(16,185,129,.06))}
+.stat.a{background:linear-gradient(135deg,rgba(245,158,11,.25),rgba(245,158,11,.06))}
+
+.section-title{font-size:14px;font-weight:700;margin:18px 4px 12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.menu-card{padding:18px 14px;border-radius:var(--radius);cursor:pointer;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;gap:10px;transition:transform .18s ease}
+.menu-card:active{transform:scale(.96)}
+.menu-card .mi{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:22px;color:#fff}
+.menu-card h3{font-size:15px;font-weight:700}
+.menu-card p{font-size:11px;color:var(--muted)}
+.mi.c1{background:linear-gradient(135deg,#6C63FF,#8b84ff)}
+.mi.c2{background:linear-gradient(135deg,#10B981,#34d399)}
+.mi.c3{background:linear-gradient(135deg,#F59E0B,#fbbf24)}
+.mi.c4{background:linear-gradient(135deg,#EC4899,#f472b6)}
+.mi.c5{background:linear-gradient(135deg,#3B82F6,#60a5fa)}
+
+.btn{border:none;border-radius:14px;padding:13px 18px;font-family:inherit;font-size:14px;font-weight:700;
+  color:#fff;cursor:pointer;position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-d))}
+.btn.green{background:linear-gradient(135deg,var(--secondary),#059669)}
+.btn.ghost{background:rgba(255,255,255,.06);border:1px solid var(--border)}
+.btn.danger{background:linear-gradient(135deg,var(--danger),#dc2626)}
+.btn.block{width:100%}
+.btn:active{transform:scale(.97)}
+.btn.small{padding:8px 14px;font-size:12px}
+.ripple{position:absolute;border-radius:50%;transform:scale(0);background:rgba(255,255,255,.4);animation:rip .6s linear;pointer-events:none}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+
+.fab{position:fixed;left:18px;bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom));
+  width:56px;height:56px;border-radius:18px;border:none;color:#fff;font-size:22px;z-index:40;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));box-shadow:0 10px 24px rgba(108,99,255,.5);cursor:pointer}
+.fab:active{transform:scale(.92)}
+
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600}
+input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--text);font-family:inherit;font-size:14px;outline:none}
+input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,99,255,.2)}
+select option{background:var(--card)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+.toolbar{display:flex;gap:8px;margin-bottom:12px}
+.toolbar .search{flex:1;position:relative}
+.toolbar .search i{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
+.toolbar .search input{padding-right:34px}
+.chip-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:none}
+.chip-scroll::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);cursor:pointer}
+.chip.active{background:linear-gradient(135deg,var(--primary),var(--primary-d));color:#fff;border-color:transparent}
+
+.list{display:flex;flex-direction:column;gap:10px}
+.item{padding:14px;border-radius:16px;display:flex;align-items:center;gap:12px;cursor:pointer;animation:slideUp .3s ease both}
+.item:active{transform:scale(.98)}
+.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;flex-shrink:0;
+  background:linear-gradient(135deg,var(--primary),var(--secondary))}
+.item .meta{flex:1;min-width:0}
+.item .meta h4{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .meta p{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .tag{font-size:10px;padding:3px 9px;border-radius:10px;font-weight:700;flex-shrink:0}
+.tag.shift{background:rgba(108,99,255,.2);color:#a5a0ff}
+.tag.green{background:rgba(16,185,129,.2);color:#5eead4}
+.chk{width:22px;height:22px;flex-shrink:0;accent-color:var(--primary)}
+
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty i{font-size:44px;opacity:.4;margin-bottom:12px;display:block}
+
+.bottomnav{position:fixed;left:0;right:0;bottom:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  display:flex;z-index:50;background:rgba(15,15,26,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--border)}
+.navbtn{flex:1;border:none;background:transparent;color:var(--muted);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;font-size:10px;font-family:inherit;cursor:pointer;position:relative;transition:color .2s}
+.navbtn i{font-size:19px}
+.navbtn.active{color:var(--primary)}
+.navbtn.active::before{content:'';position:absolute;top:0;width:26px;height:3px;border-radius:0 0 4px 4px;background:var(--primary)}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);z-index:100;display:none;opacity:0;transition:opacity .25s}
+.overlay.show{display:block;opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:101;max-height:90vh;overflow-y:auto;
+  background:var(--card);border-radius:24px 24px 0 0;border-top:1px solid var(--border);
+  padding:20px 18px calc(24px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.sheet.show{transform:translateY(0)}
+.sheet .handle{width:40px;height:4px;border-radius:4px;background:rgba(255,255,255,.2);margin:0 auto 16px}
+.sheet h2{font-size:17px;font-weight:800;margin-bottom:16px;text-align:center}
+
+.detail-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);font-size:14px}
+.detail-row:last-child{border:none}
+.detail-row .k{color:var(--muted)}
+.detail-row .v{font-weight:600}
+
+.call-btns{display:flex;gap:10px;margin:14px 0}
+.call-btns .btn{flex:1}
+
+.toast{position:fixed;bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--card);border:1px solid var(--border);color:var(--text);padding:12px 20px;border-radius:14px;
+  font-size:13px;font-weight:600;z-index:200;opacity:0;transition:.3s;box-shadow:var(--shadow);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.charts{display:grid;gap:14px}
+.donut-wrap{display:flex;align-items:center;gap:18px;padding:18px}
+.donut{width:120px;height:120px;flex-shrink:0}
+.legend{flex:1;display:flex;flex-direction:column;gap:8px}
+.legend .li{display:flex;align-items:center;gap:8px;font-size:12px}
+.legend .dot{width:12px;height:12px;border-radius:4px}
+.bars{padding:18px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:12px}
+.bar-row .name{width:80px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:22px;background:rgba(255,255,255,.05);border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));
+  display:flex;align-items:center;justify-content:flex-end;padding-inline:8px;color:#fff;font-weight:700;font-size:11px;width:0;transition:width .8s cubic-bezier(.16,1,.3,1)}
+
+.mini-actions{display:flex;gap:10px;margin:14px 0}
+.selectbar{position:sticky;top:0;z-index:5;display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;margin-bottom:12px;
+  background:linear-gradient(135deg,rgba(108,99,255,.25),rgba(108,99,255,.08));border:1px solid var(--border)}
+.selectbar.show{display:flex}
+.selectbar .cnt{font-weight:700;font-size:13px;flex:1}
+
+.shift-tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;margin:2px 4px 2px 0}
+.shift-tag.A{background:rgba(108,99,255,.25);color:#a5a0ff}
+.shift-tag.B{background:rgba(16,185,129,.25);color:#5eead4}
+.shift-tag.C{background:rgba(245,158,11,.25);color:#fcd34d}
+.shift-tag.D{background:rgba(236,72,153,.25);color:#f472b6}
+.shift-tag.default{background:rgba(255,255,255,.1);color:var(--muted)}
+
+.route-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;background:rgba(59,130,246,.2);color:#60a5fa;font-weight:600}
+
+/* ============ Light Theme ============ */
+body.light-theme{
+  --bg:#F3F4F6; --card:#FFFFFF; --border:rgba(0,0,0,0.08);
+  --text:#111827; --muted:#6B7280; --shadow:0 8px 30px rgba(0,0,0,0.08);
+}
+body.light-theme::before{
+  background:
+    radial-gradient(45% 40% at 15% 10%, rgba(108,99,255,.12), transparent 60%),
+    radial-gradient(45% 40% at 90% 20%, rgba(16,185,129,.10), transparent 60%),
+    radial-gradient(50% 45% at 60% 100%, rgba(245,158,11,.08), transparent 60%);
+}
+body.light-theme .appbar, body.light-theme .bottomnav{
+  background:rgba(243,244,246,.85); border-bottom:1px solid var(--border);
+}
+body.light-theme .glass{
+  background:linear-gradient(160deg,rgba(255,255,255,.7),rgba(255,255,255,.4));
+  border:1px solid var(--border);
+}
+body.light-theme input, body.light-theme select{
+  background:rgba(0,0,0,0.04); border-color:rgba(0,0,0,0.1); color:var(--text);
+}
+body.light-theme input:focus, body.light-theme select:focus{
+  border-color:var(--primary); box-shadow:0 0 0 3px rgba(108,99,255,.15);
+}
+body.light-theme select option{background:#fff; color:#111}
+body.light-theme .stat.p{background:linear-gradient(135deg,rgba(108,99,255,.15),rgba(108,99,255,.05))}
+body.light-theme .stat.s{background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(16,185,129,.05))}
+body.light-theme .stat.a{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(245,158,11,.05))}
+body.light-theme .donut circle:first-child{stroke:rgba(0,0,0,.06)}
+body.light-theme .bar-track{background:rgba(0,0,0,.06)}
+body.light-theme .sheet .handle{background:rgba(0,0,0,0.15)}
+body.light-theme .overlay{background:rgba(0,0,0,0.4)}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <button class="icon-btn back-btn" id="backBtn" aria-label="back"><i class="fa-solid fa-arrow-right"></i></button>
+  <div class="logo"><img src="newicon.png" alt="logo" /></div>
+  <div class="titlewrap">
+    <h1 id="appTitle">sabashift</h1>
+    <div class="date" id="todayDate"></div>
+  </div>
+  <div class="spacer"></div>
+  
+  <!-- دکمه تغییر تم -->
+  <button class="icon-btn" id="themeBtn" aria-label="تغییر تم"><i class="fa-solid fa-moon"></i></button>
+  
+  <button class="icon-btn" id="backupBtn" aria-label="backup"><i class="fa-solid fa-cloud-arrow-down"></i></button>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div class="stats">
+      <div class="stat p glass"><i class="fa-solid fa-users"></i><div class="n" id="stPass">0</div><div class="l">مسافران</div></div>
+      <div class="stat s glass"><i class="fa-solid fa-id-card"></i><div class="n" id="stDrv">0</div><div class="l">رانندگان</div></div>
+      <div class="stat a glass"><i class="fa-solid fa-clock"></i><div class="n" id="stShift">0</div><div class="l">شیفت‌ها</div></div>
+    </div>
+    <div class="section-title"><i class="fa-solid fa-grip"></i> منوی اصلی</div>
+    <div class="menu-grid">
+      <div class="menu-card glass" data-go="dashboard"><div class="mi c1"><i class="fa-solid fa-chart-pie"></i></div><h3>داشبورد</h3><p>نمودار و آمار</p></div>
+      <div class="menu-card glass" data-go="shifts"><div class="mi c3"><i class="fa-solid fa-clock"></i></div><h3>شیفت‌ها</h3><p>مدیریت شیفت</p></div>
+      <div class="menu-card glass" data-go="drivers"><div class="mi c2"><i class="fa-solid fa-id-card"></i></div><h3>رانندگان</h3><p>لیست رانندگان</p></div>
+      <div class="menu-card glass" data-go="passengers"><div class="mi c4"><i class="fa-solid fa-users"></i></div><h3>مسافران</h3><p>فیلتر و ثبت</p></div>
+      <div class="menu-card glass" data-go="manage" style="grid-column:span 2"><div class="mi c5"><i class="fa-solid fa-gear"></i></div><h3>مدیریت</h3><p>پشتیبان‌گیری و گزارش</p></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="view" id="view-dashboard">
+    <div class="stats">
+      <div class="stat p glass"><div class="n" id="dPass">0</div><div class="l">کل مسافر</div></div>
+      <div class="stat s glass"><div class="n" id="dRoutes">0</div><div class="l">مسیرها</div></div>
+      <div class="stat a glass"><div class="n" id="dComp">0</div><div class="l">شرکت‌ها</div></div>
+    </div>
+    <div class="charts">
+      <div class="card">
+        <div class="section-title" style="margin:14px 14px 0"><i class="fa-solid fa-chart-pie"></i> توزیع بر اساس شیفت</div>
+        <div class="donut-wrap"><svg class="donut" id="donut" viewBox="0 0 42 42"></svg><div class="legend" id="legend"></div></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin:14px 14px 0"><i class="fa-solid fa-chart-column"></i> مسافر به تفکیک راننده</div>
+        <div class="bars" id="bars"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHIFTS -->
+  <section class="view" id="view-shifts">
+    <div class="list" id="shiftList"></div>
+    <div style="margin-top:20px;padding-bottom:20px">
+      <div class="section-title"><i class="fa-solid fa-plus"></i> افزودن شیفت</div>
+      <div class="card" style="padding:16px">
+        <div class="field"><label>نام شیفت</label><input id="shiftName" placeholder="مثلا شیفت صبح" /></div>
+        <button class="btn primary block" onclick="addShift()">افزودن شیفت</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRIVERS -->
+  <section class="view" id="view-drivers">
+    <div class="list" id="driverList"></div>
+    <div style="margin-top:20px;padding-bottom:20px">
+      <div class="section-title"><i class="fa-solid fa-plus"></i> افزودن راننده</div>
+      <div class="card" style="padding:16px">
+        <div class="field"><label>نام راننده</label><input id="drvName" placeholder="نام و نام خانوادگی" /></div>
+        <div class="field"><label>شماره تماس</label><input id="drvPhone" inputmode="tel" placeholder="09xxxxxxxxx" /></div>
+        <div class="field"><label>مسیر</label>
+          <div class="row2" style="gap:8px">
+            <select id="drvRouteSelect" style="flex:2" onchange="document.getElementById('drvRouteInput').value=this.value">
+              <option value="">— انتخاب مسیر موجود —</option>
+            </select>
+            <input id="drvRouteInput" placeholder="یا دستی وارد کن" style="flex:1" />
+          </div>
+        </div>
+        <button class="btn green block" onclick="addDriver()">افزودن راننده</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSENGERS -->
+  <section class="view" id="view-passengers">
+    <div class="toolbar">
+      <div class="search"><i class="fa-solid fa-magnifying-glass"></i><input id="pSearch" placeholder="جستجوی مسافر..." oninput="renderPassengers()" /></div>
+      <button class="btn ghost" onclick="openFilter()"><i class="fa-solid fa-filter"></i></button>
+    </div>
+    <div class="chip-scroll" id="sortChips">
+      <div class="chip active" data-sort="name">مرتب: نام</div>
+      <div class="chip" data-sort="shift">مرتب: شیفت</div>
+      <div class="chip" data-sort="station">مرتب: ایستگاه</div>
+    </div>
+    <div class="selectbar" id="selectbar">
+      <span class="cnt" id="selCnt">0 انتخاب شده</span>
+      <button class="btn primary small" onclick="openBulkShift()"><i class="fa-solid fa-shuffle"></i> تغییر شیفت</button>
+      <button class="btn ghost small" onclick="clearSelection()">لغو</button>
+    </div>
+    <div class="list" id="passengerList"></div>
+  </section>
+
+  <!-- MANAGE -->
+  <section class="view" id="view-manage">
+    <div class="section-title"><i class="fa-solid fa-database"></i> داده‌ها</div>
+    <div class="card" style="padding:16px">
+      <div class="mini-actions">
+        <button class="btn primary block" onclick="exportData()"><i class="fa-solid fa-cloud-arrow-down"></i> پشتیبان‌گیری (JSON)</button>
+        <button class="btn ghost block" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-cloud-arrow-up"></i> بازیابی</button>
+      </div>
+      <input type="file" id="importFile" accept=".json" hidden onchange="importData(event)" />
+      <button class="btn green block" onclick="exportReport()"><i class="fa-solid fa-file-lines"></i> خروجی گزارش (TXT)</button>
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
+        <button class="btn primary block" onclick="document.getElementById('csvFile').click()"><i class="fa-solid fa-file-import"></i> ورود از فایل متنی / CSV</button>
+        <input type="file" id="csvFile" accept=".csv,.txt,.text" hidden onchange="importCSV(event)" />
+        <p style="font-size:11px;color:var(--muted);margin-top:4px">ستون‌ها: نام و نام خانوادگی ، شرکت ، ایستگاه ، نام راننده ، مسیر ، شیفت</p>
+      </div>
+    </div>
+    <div class="section-title"><i class="fa-solid fa-chart-simple"></i> آمارگیری پیشرفته</div>
+    <div class="card" id="statBox" style="padding:16px"></div>
+    <div class="section-title" style="color:var(--danger)"><i class="fa-solid fa-triangle-exclamation"></i> خطرناک</div>
+    <div class="card" style="padding:16px;margin-bottom:30px">
+      <button class="btn danger block" onclick="resetAll()">حذف تمام داده‌ها</button>
+    </div>
+  </section>
+</main>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openPassengerForm()" style="display:none"><i class="fa-solid fa-plus"></i></button>
+
+<!-- Bottom nav -->
+<nav class="bottomnav">
+  <button class="navbtn active" data-go="home"><i class="fa-solid fa-house"></i>خانه</button>
+  <button class="navbtn" data-go="shifts"><i class="fa-solid fa-clock"></i>شیفت‌ها</button>
+  <button class="navbtn" data-go="drivers"><i class="fa-solid fa-id-card"></i>رانندگان</button>
+  <button class="navbtn" data-go="passengers"><i class="fa-solid fa-users"></i>مسافران</button>
+  <button class="navbtn" data-go="manage"><i class="fa-solid fa-gear"></i>مدیریت</button>
+</nav>
+
+<!-- overlay + sheet -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet"><div class="handle"></div><div id="sheetBody"></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ IndexedDB ============ */
+const DB_NAME='sabashift_db', DB_VER=1;
+let db=null;
+const STORES=['passengers','drivers','shifts'];
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);
+  r.onupgradeneeded=e=>{const d=e.target.result;STORES.forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'});});};
+  r.onsuccess=e=>{db=e.target.result;res(db);};r.onerror=e=>rej(e.target.error);});}
+function tx(store,mode){return db.transaction(store,mode).objectStore(store);}
+function getAll(store){return new Promise((res,rej)=>{const r=tx(store,'readonly').getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);});}
+function put(store,val){return new Promise((res,rej)=>{const r=tx(store,'readwrite').put(val);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function del(store,id){return new Promise((res,rej)=>{const r=tx(store,'readwrite').delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function clearStore(store){return new Promise((res,rej)=>{const r=tx(store,'readwrite').clear();r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+/* ============ State ============ */
+let passengers=[],drivers=[],shifts=[];
+let curSort='name';
+let filter={shift:'',driver:'',route:'',company:''};
+let selected=new Set();
+
+/* ============ Theme Logic ============ */
+const themeBtn = document.getElementById('themeBtn');
+function applyTheme(isLight) {
+  document.body.classList.toggle('light-theme', isLight);
+  themeBtn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+  document.querySelector('meta[name="theme-color"]').content = isLight ? '#F3F4F6' : '#0F0F1A';
+  localStorage.setItem('sabashift_theme', isLight ? 'light' : 'dark');
+}
+themeBtn.onclick = () => applyTheme(!document.body.classList.contains('light-theme'));
+if (localStorage.getItem('sabashift_theme') === 'light') applyTheme(true);
+
+/* ============ Jalali date ============ */
+function toJalali(gy,gm,gd){const g_d_m=[0,31,59,90,120,151,181,212,243,273,304,334];let jy,jm,jd,gy2=gy-1600,gm2=gm-1,gd2=gd-1;
+  let days=365*gy2+Math.floor((gy2+3)/4)-Math.floor((gy2+99)/100)+Math.floor((gy2+399)/400);
+  days+=g_d_m[gm2]+gd2;if(gm2>1&&((gy%4===0&&gy%100!==0)||gy%400===0))days++;days-=79;
+  let jnp=Math.floor(days/12053);days%=12053;jy=979+33*jnp+4*Math.floor(days/1461);days%=1461;
+  if(days>=366){jy+=Math.floor((days-1)/365);days=(days-1)%365;}
+  if(days<186){jm=1+Math.floor(days/31);jd=1+days%31;}else{jm=7+Math.floor((days-186)/30);jd=1+(days-186)%30;}
+  return[jy,jm,jd];}
+const JMON=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+function jalaliNow(){const d=new Date();const[y,m,dd]=toJalali(d.getFullYear(),d.getMonth()+1,d.getDate());
+  return{str:`${dd} ${JMON[m-1]} ${y}`,full:`${dd} ${JMON[m-1]} ${y} - ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};}
+
+/* ============ Navigation ============ */
+const TITLES={home:'sabashift',dashboard:'داشبورد',shifts:'شیفت‌ها',drivers:'رانندگان',passengers:'مسافران',manage:'مدیریت'};
+let current='home';
+function go(view,push=true){
+  if(!TITLES[view])view='home';
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  current=view;
+  document.getElementById('appTitle').textContent=TITLES[view];
+  document.body.classList.toggle('subpage',view!=='home');
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.go===view||(view==='dashboard'&&b.dataset.go==='home')));
+  document.getElementById('fab').style.display=view==='passengers'?'grid':'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(push)history.pushState({view},'', '#'+view);
+  if(view==='dashboard')renderDashboard();
+  if(view==='passengers')renderPassengers();
+  if(view==='manage')renderStats();
+  if(view==='shifts')renderShifts();
+  if(view==='drivers'){fillRouteSelect();renderDrivers();}
+}
+
+/* ============ Back Button Fix ============ */
+window.addEventListener('popstate',e=>{
+  if(isSheetOpen()){closeSheet();history.pushState({view:current},'','#'+current);return;}
+  const v=(e.state&&e.state.view)||'home';
+  if(v==='home'&&current==='home'){
+    confirmExit();
+    return; // بدون پوش کردن استیت جدید، تا دکمه بک درست کار کند
+  }
+  go(v,false);
+});
+
+document.getElementById('backBtn').onclick=()=>history.back();
+
+function confirmExit(){
+  showSheet(`<h2>خروج از برنامه</h2><p style="text-align:center;color:var(--muted);margin-bottom:18px">آیا از خروج مطمئن هستید؟</p>
+    <div class="row2"><button class="btn ghost block" onclick="cancelExit()">انصراف</button>
+    <button class="btn danger block" onclick="doExit()">خروج</button></div>`);
+}
+function cancelExit(){
+  closeSheet();
+  history.pushState({view:'home'}, '', '#home'); // بازگرداندن استیت در صورت انصراف
+}
+function doExit(){
+  closeSheet();
+  try{window.close();}catch(e){}
+  history.back(); // خروج واقعی از پوشه یا بستن تب
+}
+
+/* ============ Sheet ============ */
+function showSheet(html){document.getElementById('sheetBody').innerHTML=html;
+  document.getElementById('overlay').classList.add('show');document.getElementById('sheet').classList.add('show');}
+function closeSheet(){document.getElementById('overlay').classList.remove('show');document.getElementById('sheet').classList.remove('show');}
+function isSheetOpen(){return document.getElementById('sheet').classList.contains('show');}
+
+/* ============ Toast ============ */
+let toastT;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+
+/* ============ Ripple ============ */
+document.addEventListener('pointerdown',e=>{const el=e.target.closest('.btn,.icon-btn,.navbtn,.menu-card,.item,.fab,.chip');
+  if(!el)return;const r=document.createElement('span');r.className='ripple';const rect=el.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height);r.style.width=r.style.height=size+'px';
+  r.style.left=(e.clientX-rect.left-size/2)+'px';r.style.top=(e.clientY-rect.top-size/2)+'px';
+  if(getComputedStyle(el).position==='static')el.style.position='relative';el.appendChild(r);setTimeout(()=>r.remove(),600);});
+
+function esc(s){return(s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function emptyHTML(t){return`<div class="empty"><i class="fa-regular fa-folder-open"></i><div>${t}</div></div>`;}
+function uniq(key){return[...new Set(passengers.map(p=>p[key]).filter(Boolean))];}
+function optionList(arr,sel){return['<option value="">— انتخاب —</option>'].concat(arr.map(x=>`<option ${x.name===sel?'selected':''}>${esc(x.name)}</option>`)).join('');}
+function getRoutes(){return[...new Set(passengers.map(p=>p.route).filter(Boolean))].sort();}
+
+/* ============ Renderers ============ */
+function updateHomeStats(){document.getElementById('stPass').textContent=passengers.length;
+  document.getElementById('stDrv').textContent=drivers.length;document.getElementById('stShift').textContent=shifts.length;}
+
+function renderShifts(){const el=document.getElementById('shiftList');
+  if(!shifts.length){el.innerHTML=emptyHTML('شیفتی ثبت نشده');return;}
+  el.innerHTML=shifts.map((s,i)=>`<div class="item card" style="animation-delay:${i*.03}s" onclick="showShiftPassengers('${s.name}')">
+    <div class="avatar" style="background:linear-gradient(135deg,#F59E0B,#fbbf24)"><i class="fa-solid fa-clock"></i></div>
+    <div class="meta"><h4>${esc(s.name)}</h4><p>${passengers.filter(p=>p.shift===s.name).length} مسافر</p></div>
+    <button class="icon-btn" onclick="event.stopPropagation();delShift('${s.id}')" style="color:var(--danger)"><i class="fa-solid fa-trash"></i></button>
+  </div>`).join('');}
+
+function showShiftPassengers(shiftName){
+  const items=passengers.filter(p=>p.shift===shiftName);
+  if(!items.length){toast('مسافری در این شیفت نیست');return;}
+  showSheet(`<h2>مسافران شیفت ${esc(shiftName)} (${items.length} نفر)</h2>
+    <div style="max-height:50vh;overflow-y:auto">${items.map(p=>`<div class="item card" style="padding:10px 12px;margin-bottom:6px;cursor:default" onclick="passengerDetail('${p.id}')">
+      <div class="avatar" style="width:36px;height:36px;font-size:12px">${esc(p.name.charAt(0))}</div>
+      <div class="meta"><h4 style="font-size:13px">${esc(p.name)}</h4><p>${esc(p.driver||'-')} · ${esc(p.station||'-')}</p></div>
+      <span class="tag shift">${esc(p.shift)}</span>
+    </div>`).join('')}</div>`);
+}
+
+function fillRouteSelect(){
+  const routes=getRoutes();
+  const sel=document.getElementById('drvRouteSelect');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— انتخاب مسیر موجود —</option>';
+  routes.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+  sel.value=cur;
+}
+
+function renderDrivers(){const el=document.getElementById('driverList');
+  if(!drivers.length){el.innerHTML=emptyHTML('راننده‌ای ثبت نشده');return;}
+  el.innerHTML=drivers.map((d,i)=>`<div class="item card" style="animation-delay:${i*.03}s;flex-wrap:wrap" onclick="showDriverDetail('${d.id}')">
+    <div class="avatar">${esc(initials(d.name))}</div>
+    <div class="meta"><h4>${esc(d.name)}</h4>
+      <p><i class="fa-solid fa-phone" style="font-size:10px"></i> ${esc(d.phone||'—')} 
+      <span class="route-badge" style="font-size:10px;padding:1px 8px">${esc(d.route||'بدون مسیر')}</span>
+      • ${passengers.filter(p=>p.driver===d.name).length} مسافر</p>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      <button class="icon-btn" onclick="event.stopPropagation();editDriver('${d.id}')" style="color:var(--primary);width:36px;height:36px;font-size:14px"><i class="fa-solid fa-pen"></i></button>
+      <button class="icon-btn" onclick="event.stopPropagation();delDriver('${d.id}')" style="color:var(--danger);width:36px;height:36px;font-size:14px"><i class="fa-solid fa-trash"></i></button>
+    </div>
+  </div>`).join('');}
+function initials(n){return(n||'?').trim().charAt(0);}
+
+function showDriverDetail(id){const d=drivers.find(x=>x.id===id);if(!d)return;
+  const items=passengers.filter(p=>p.driver===d.name);
+  const shiftsMap={};items.forEach(p=>{const s=p.shift||'بدون شیفت';if(!shiftsMap[s])shiftsMap[s]=[];shiftsMap[s].push(p);});
+  let html=`<h2>${esc(d.name)}</h2>
+    <div class="detail-row"><span class="k">📍 مسیر</span><span class="v"><span class="route-badge">${esc(d.route||'—')}</span></span></div>
+    <div class="detail-row"><span class="k">📞 شماره تماس</span><span class="v">${esc(d.phone||'—')}</span></div>
+    <div class="call-btns">
+      ${d.phone?`<button class="btn green" onclick="callDriver('${d.phone}')"><i class="fa-solid fa-phone"></i> تماس</button>
+      <button class="btn primary" onclick="smsDriver('${d.phone}')"><i class="fa-solid fa-comment"></i> پیامک</button>`:'<span style="color:var(--muted)">شماره تماس ثبت نشده</span>'}
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:6px">
+      <div style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:8px">مسافران این راننده (${items.length} نفر)</div>`;
+  if(!items.length){html+='<div style="color:var(--muted)">مسافری ثبت نشده</div>';}
+  else{
+    const sortedShifts=Object.keys(shiftsMap).sort();
+    sortedShifts.forEach(s=>{
+      html+=`<div style="margin-top:8px"><span class="shift-tag ${s.replace(/[^A-Za-z0-9]/g,'')||'default'}">${esc(s)}</span> <span style="font-size:11px;color:var(--muted)">${shiftsMap[s].length} نفر</span>
+        <div style="margin-top:4px;padding-inline-start:8px">`;
+      shiftsMap[s].forEach(p=>{
+        html+=`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer" onclick="passengerDetail('${p.id}')">
+          <span>${esc(p.name)}</span><span style="color:var(--muted);font-size:11px">${esc(p.station||'-')}</span>
+        </div>`;
+      });
+      html+=`</div>`;
+    });
+  }
+  html+=`</div>
+    <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px">
+      <button class="btn ghost block" onclick="editDriver('${d.id}')"><i class="fa-solid fa-pen"></i> ویرایش اطلاعات راننده</button>
+    </div>`;
+  showSheet(html);
+}
+
+function callDriver(phone){if(phone)window.location.href=`tel:${phone}`;}
+function smsDriver(phone){if(phone)window.location.href=`sms:${phone}`;}
+
+function editDriver(id){const d=drivers.find(x=>x.id===id);if(!d)return;
+  const routes=getRoutes();
+  let routeOpts='<option value="">— انتخاب مسیر موجود —</option>';
+  routes.forEach(r=>{routeOpts+=`<option ${r===d.route?'selected':''}>${esc(r)}</option>`;});
+  showSheet(`<h2>ویرایش راننده</h2>
+    <div class="field"><label>نام راننده</label><input id="edit_drv_name" value="${esc(d.name)}" /></div>
+    <div class="field"><label>شماره تماس</label><input id="edit_drv_phone" inputmode="tel" value="${esc(d.phone||'')}" /></div>
+    <div class="field"><label>مسیر</label>
+      <div class="row2" style="gap:8px">
+        <select id="edit_drv_route_sel" style="flex:2" onchange="document.getElementById('edit_drv_route_input').value=this.value">${routeOpts}</select>
+        <input id="edit_drv_route_input" value="${esc(d.route||'')}" placeholder="یا دستی" style="flex:1" />
+      </div>
+    </div>
+    <button class="btn primary block" onclick="saveDriverEdit('${d.id}')">ذخیره تغییرات</button>`);
+}
+
+async function saveDriverEdit(id){const name=document.getElementById('edit_drv_name').value.trim();
+  if(!name){toast('نام راننده الزامی است');return;}
+  const phone=document.getElementById('edit_drv_phone').value.trim();
+  const route=document.getElementById('edit_drv_route_input').value.trim()||document.getElementById('edit_drv_route_sel').value;
+  const d=drivers.find(x=>x.id===id);if(!d)return;
+  const oldName=d.name;d.name=name;d.phone=phone;d.route=route;
+  passengers.forEach(p=>{if(p.driver===oldName)p.driver=name;});
+  await put('drivers',d);
+  for(const p of passengers.filter(p=>p.driver===name))await put('passengers',p);
+  await load();closeSheet();renderDrivers();updateHomeStats();toast('راننده ویرایش شد');}
+
+function filteredPassengers(){let arr=passengers.slice();
+  const q=(document.getElementById('pSearch').value||'').trim();
+  if(q)arr=arr.filter(p=>[p.name,p.company,p.station,p.driver,p.route].some(x=>(x||'').includes(q)));
+  if(filter.shift)arr=arr.filter(p=>p.shift===filter.shift);
+  if(filter.driver)arr=arr.filter(p=>p.driver===filter.driver);
+  if(filter.route)arr=arr.filter(p=>p.route===filter.route);
+  if(filter.company)arr=arr.filter(p=>p.company===filter.company);
+  arr.sort((a,b)=>{const k=curSort;return(a[k]||'').localeCompare(b[k]||'','fa');});
+  return arr;}
+
+function renderPassengers(){const el=document.getElementById('passengerList');const arr=filteredPassengers();
+  updateSelbar();
+  if(!arr.length){el.innerHTML=emptyHTML('مسافری یافت نشد');return;}
+  el.innerHTML=arr.map((p,i)=>`<div class="item card" style="animation-delay:${Math.min(i*.02,.3)}s" onclick="passengerDetail('${p.id}')">
+    <input type="checkbox" class="chk" ${selected.has(p.id)?'checked':''} onclick="event.stopPropagation();toggleSel('${p.id}',this.checked)"/>
+    <div class="avatar">${esc(initials(p.name))}</div>
+    <div class="meta"><h4>${esc(p.name)}</h4><p>${esc(p.station||'-')} • ${esc(p.driver||'-')} • ${esc(p.company||'-')}</p></div>
+    <span class="tag shift">${esc(p.shift||'-')}</span></div>`).join('');}
+
+function passengerDetail(id){const p=passengers.find(x=>x.id===id);if(!p)return;
+  const d=new Date(p.registerDate);const[y,m,dd]=toJalali(d.getFullYear(),d.getMonth()+1,d.getDate());
+  const reg=`${dd} ${JMON[m-1]} ${y} - ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  showSheet(`<h2>${esc(p.name)}</h2>
+    <div class="detail-row"><span class="k">شرکت</span><span class="v">${esc(p.company||'-')}</span></div>
+    <div class="detail-row"><span class="k">ایستگاه</span><span class="v">${esc(p.station||'-')}</span></div>
+    <div class="detail-row"><span class="k">مسیر</span><span class="v">${esc(p.route||'-')}</span></div>
+    <div class="detail-row"><span class="k">راننده</span><span class="v">${esc(p.driver||'-')}</span></div>
+    <div class="detail-row"><span class="k">شیفت</span><span class="v">${esc(p.shift||'-')}</span></div>
+    <div class="detail-row"><span class="k">تلفن</span><span class="v">${esc(p.phone||'-')}</span></div>
+    <div class="detail-row"><span class="k">تاریخ ثبت</span><span class="v">${reg}</span></div>
+    <div class="row2" style="margin-top:16px"><button class="btn ghost block" onclick='openPassengerForm(${JSON.stringify(p).replace(/'/g,"&#39;")})'><i class="fa-solid fa-pen"></i> ویرایش</button>
+    <button class="btn danger block" onclick="delPassenger('${p.id}')"><i class="fa-solid fa-trash"></i> حذف</button></div>`);}
+
+async function delPassenger(id){await del('passengers',id);await load();closeSheet();renderPassengers();toast('حذف شد');}
+
+/* ============ Passenger form ============ */
+function openPassengerForm(p){p=p||{};const editing=!!p.id;
+  showSheet(`<h2>${editing?'ویرایش مسافر':'مسافر جدید'}</h2>
+    <div class="field"><label>نام و نام خانوادگی *</label><input id="f_name" value="${esc(p.name||'')}"/></div>
+    <div class="row2"><div class="field"><label>شرکت</label><input id="f_company" value="${esc(p.company||'')}"/></div>
+    <div class="field"><label>ایستگاه</label><input id="f_station" value="${esc(p.station||'')}"/></div></div>
+    <div class="row2"><div class="field"><label>مسیر</label><input id="f_route" value="${esc(p.route||'')}"/></div>
+    <div class="field"><label>تلفن</label><input id="f_phone" inputmode="tel" value="${esc(p.phone||'')}"/></div></div>
+    <div class="row2"><div class="field"><label>راننده</label><select id="f_driver">${optionList(drivers,p.driver)}</select></div>
+    <div class="field"><label>شیفت</label><select id="f_shift">${optionList(shifts,p.shift)}</select></div></div>
+    <button class="btn primary block" onclick="savePassenger('${p.id||''}')">${editing?'ذخیره تغییرات':'افزودن مسافر'}</button>`);}
+async function savePassenger(id){const name=document.getElementById('f_name').value.trim();
+  if(!name){toast('نام الزامی است');return;}
+  const existing=id?passengers.find(x=>x.id===id):null;
+  const obj={id:id||uid(),name,company:val('f_company'),station:val('f_station'),route:val('f_route'),
+    phone:val('f_phone'),driver:val('f_driver'),shift:val('f_shift'),
+    registerDate:existing?existing.registerDate:new Date().toISOString()};
+  await put('passengers',obj);await load();closeSheet();go('passengers');toast(id?'ویرایش شد':'مسافر افزوده شد');}
+function val(id){return document.getElementById(id).value.trim();}
+
+/* ============ Filter ============ */
+function openFilter(){
+  const mk=(key,label,arr)=>`<div class="field"><label>${label}</label><select id="flt_${key}">
+    <option value="">همه</option>${arr.map(x=>`<option ${filter[key]===x?'selected':''}>${esc(x)}</option>`).join('')}</select></div>`;
+  showSheet(`<h2>فیلتر پیشرفته</h2>
+    ${mk('shift','شیفت',shifts.map(s=>s.name))}
+    ${mk('driver','راننده',drivers.map(d=>d.name))}
+    ${mk('route','مسیر',uniq('route'))}
+    ${mk('company','شرکت',uniq('company'))}
+    <div class="row2" style="margin-top:8px"><button class="btn ghost block" onclick="resetFilter()">حذف فیلتر</button>
+    <button class="btn primary block" onclick="applyFilter()">اعمال</button></div>`);}
+function applyFilter(){['shift','driver','route','company'].forEach(k=>filter[k]=document.getElementById('flt_'+k).value);
+  closeSheet();renderPassengers();toast('فیلتر اعمال شد');}
+function resetFilter(){filter={shift:'',driver:'',route:'',company:''};closeSheet();renderPassengers();toast('فیلتر پاک شد');}
+
+/* ============ Selection / bulk ============ */
+function toggleSel(id,on){on?selected.add(id):selected.delete(id);updateSelbar();}
+function clearSelection(){selected.clear();renderPassengers();}
+function updateSelbar(){const bar=document.getElementById('selectbar');bar.classList.toggle('show',selected.size>0);
+  document.getElementById('selCnt').textContent=selected.size+' انتخاب شده';}
+function openBulkShift(){if(!selected.size){toast('کسی انتخاب نشده');return;}
+  showSheet(`<h2>تغییر شیفت (${selected.size} نفر)</h2>
+    <div class="field"><label>شیفت جدید</label><select id="bulk_shift">${optionList(shifts,'')}</select></div>
+    <button class="btn primary block" onclick="applyBulkShift()">اعمال روی همه</button>`);}
+async function applyBulkShift(){const s=document.getElementById('bulk_shift').value;
+  for(const id of selected){const p=passengers.find(x=>x.id===id);if(p){p.shift=s;await put('passengers',p);}}
+  await load();selected.clear();closeSheet();renderPassengers();toast('شیفت گروهی تغییر کرد');}
+
+/* ============ Shifts / Drivers CRUD ============ */
+async function addShift(){const n=document.getElementById('shiftName').value.trim();if(!n){toast('نام شیفت را وارد کنید');return;}
+  await put('shifts',{id:uid(),name:n});document.getElementById('shiftName').value='';await load();renderShifts();updateHomeStats();toast('شیفت افزوده شد');}
+async function delShift(id){await del('shifts',id);await load();renderShifts();updateHomeStats();toast('حذف شد');}
+async function addDriver(){
+  const name=document.getElementById('drvName').value.trim();
+  if(!name){toast('نام راننده را وارد کنید');return;}
+  const phone=document.getElementById('drvPhone').value.trim();
+  const route=document.getElementById('drvRouteInput').value.trim()||document.getElementById('drvRouteSelect').value;
+  await put('drivers',{id:uid(),name,phone,route});
+  document.getElementById('drvName').value='';document.getElementById('drvPhone').value='';document.getElementById('drvRouteInput').value='';
+  document.getElementById('drvRouteSelect').value='';
+  await load();renderDrivers();updateHomeStats();toast('راننده افزوده شد');}
+async function delDriver(id){await del('drivers',id);await load();renderDrivers();updateHomeStats();toast('حذف شد');}
+
+/* ============ Dashboard ============ */
+function renderDashboard(){
+  document.getElementById('dPass').textContent=passengers.length;
+  document.getElementById('dRoutes').textContent=uniq('route').length;
+  document.getElementById('dComp').textContent=uniq('company').length;
+  const colors=['#6C63FF','#10B981','#F59E0B','#EC4899','#3B82F6','#EF4444','#14B8A6','#A855F7'];
+  const counts={};passengers.forEach(p=>{const k=p.shift||'بدون شیفت';counts[k]=(counts[k]||0)+1;});
+  const entries=Object.entries(counts);const total=passengers.length||1;
+  const svg=document.getElementById('donut');const legend=document.getElementById('legend');
+  svg.innerHTML='';legend.innerHTML='';let off=25;
+  svg.innerHTML+=`<circle cx="21" cy="21" r="15.915" fill="transparent" stroke="rgba(128,128,128,0.1)" stroke-width="6"/>`;
+  entries.forEach(([k,v],i)=>{const pct=v/total*100;const c=colors[i%colors.length];
+    svg.innerHTML+=`<circle cx="21" cy="21" r="15.915" fill="transparent" stroke="${c}" stroke-width="6" stroke-dasharray="${pct} ${100-pct}" stroke-dashoffset="${off}" transform="rotate(-90 21 21)"/>`;
+    off-=pct;legend.innerHTML+=`<div class="li"><span class="dot" style="background:${c}"></span>${esc(k)} <b style="margin-inline-start:auto">${v}</b></div>`;});
+  if(!entries.length)legend.innerHTML='<div style="color:var(--muted)">داده‌ای نیست</div>';
+  const dc={};passengers.forEach(p=>{const k=p.driver||'بدون راننده';dc[k]=(dc[k]||0)+1;});
+  const sorted=Object.entries(dc).sort((a,b)=>b[1]-a[1]).slice(0,6);const max=Math.max(1,...sorted.map(x=>x[1]));
+  const bars=document.getElementById('bars');
+  bars.innerHTML=sorted.length?sorted.map(([k,v])=>`<div class="bar-row"><div class="name">${esc(k)}</div>
+    <div class="bar-track"><div class="bar-fill" data-w="${v/max*100}">${v}</div></div></div>`).join(''):'<div style="color:var(--muted)">داده‌ای نیست</div>';
+  requestAnimationFrame(()=>bars.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+'%'));
+}
+
+/* ============ Stats ============ */
+function renderStats(){const box=document.getElementById('statBox');
+  const perShift=shifts.map(s=>`${esc(s.name)}: <b>${passengers.filter(p=>p.shift===s.name).length}</b>`);
+  box.innerHTML=`<div class="detail-row"><span class="k">کل مسافران</span><span class="v">${passengers.length}</span></div>
+    <div class="detail-row"><span class="k">کل رانندگان</span><span class="v">${drivers.length}</span></div>
+    <div class="detail-row"><span class="k">کل شیفت‌ها</span><span class="v">${shifts.length}</span></div>
+    <div class="detail-row"><span class="k">تعداد مسیرها</span><span class="v">${uniq('route').length}</span></div>
+    <div class="detail-row"><span class="k">تعداد شرکت‌ها</span><span class="v">${uniq('company').length}</span></div>
+    <div style="margin-top:10px;font-size:13px;color:var(--muted);line-height:2.2">${perShift.join(' • ')||'-'}</div>`;}
+
+/* ============ Backup / Export ============ */
+function exportData(){const data={version:1,exportedAt:new Date().toISOString(),passengers,drivers,shifts};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  downloadBlob(blob,`sabashift-backup-${Date.now()}.json`);toast('پشتیبان دانلود شد');}
+function importData(e){const file=e.target.files[0];if(!file)return;const rd=new FileReader();
+  rd.onload=async()=>{try{const d=JSON.parse(rd.result);
+    if(d.passengers){await clearStore('passengers');for(const p of d.passengers)await put('passengers',p);}
+    if(d.drivers){await clearStore('drivers');for(const p of d.drivers)await put('drivers',p);}
+    if(d.shifts){await clearStore('shifts');for(const p of d.shifts)await put('shifts',p);}
+    await load();renderAll();toast('بازیابی انجام شد');}catch(err){toast('فایل نامعتبر');}};rd.readAsText(file);e.target.value='';}
+
+/* ============ TXT Export Fix ============ */
+function exportReport(){if(!passengers.length){toast('مسافری نیست');return;}
+  const head=['نام','شرکت','ایستگاه','راننده','تلفن','مسیر','شیفت','تاریخ ثبت'];
+  const rows=passengers.map(p=>{const d=new Date(p.registerDate);return[p.name,p.company,p.station,p.driver,p.phone,p.route,p.shift,
+    isNaN(d)?'':d.toLocaleString('fa-IR')].map(x=>`"${(x||'').toString().replace(/"/g,'""')}"`).join(',');});
+  const csv='\ufeff'+[head.join(','),...rows].join('\n');
+  downloadBlob(new Blob([csv],{type:'text/plain;charset=utf-8'}),`sabashift-report-${Date.now()}.txt`);toast('گزارش متنی دانلود شد');}
+  
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+
+/* ============ CSV Import ============ */
+function splitCSVLine(line){const out=[];let cur='',q=false;
+  for(let i=0;i<line.length;i++){const c=line[i];
+    if(q){if(c==='"'){if(line[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=c;}
+    else{if(c==='"')q=true;else if(c===','||c==='\t'||c===';'){out.push(cur);cur='';}else cur+=c;}}
+  out.push(cur);return out.map(s=>s.trim());}
+function looksHeader(cells){const j=cells.join('');return j.includes('نام')&&(j.includes('شرکت')||j.includes('راننده')||j.includes('شیفت'));}
+
+function importCSV(e){const file=e.target.files[0];
+  if(!file){toast('فایلی انتخاب نشد');return;}
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(!['csv','txt','text'].includes(ext)){toast('لطفاً فایل متنی انتخاب کنید');e.target.value='';return;}
+  const rd=new FileReader();
+  rd.onload=async()=>{try{
+    let text=rd.result.replace(/^\ufeff/,'');
+    const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length);
+    if(!lines.length){toast('فایل خالی است');e.target.value='';return;}
+    let start=0;const first=splitCSVLine(lines[0]);
+    if(looksHeader(first))start=1;
+    let added=0;const newDrivers=new Set(drivers.map(d=>d.name));const newShifts=new Set(shifts.map(s=>s.name));
+    for(let i=start;i<lines.length;i++){const c=splitCSVLine(lines[i]);
+      const name=(c[0]||'').trim();if(!name)continue;
+      const route=(c[4]||'').trim();
+      const obj={id:uid(),name,company:(c[1]||'').trim(),station:(c[2]||'').trim(),
+        driver:(c[3]||'').trim(),route:route,shift:(c[5]||'').trim(),
+        phone:(c[6]||'').trim(),registerDate:new Date().toISOString()};
+      await put('passengers',obj);added++;
+      if(obj.driver&&!newDrivers.has(obj.driver)){
+        newDrivers.add(obj.driver);
+        await put('drivers',{id:uid(),name:obj.driver,phone:'',route:route});
+      }
+      if(obj.shift&&!newShifts.has(obj.shift)){newShifts.add(obj.shift);await put('shifts',{id:uid(),name:obj.shift});}
+    }
+    await load();renderAll();go('passengers');toast(added+' مسافر وارد شد');
+  }catch(err){toast('خطا در خواندن فایل');console.error(err);}};
+  rd.readAsText(file,'UTF-8');e.target.value='';}
+
+async function resetAll(){if(!confirm('آیا از حذف تمام اطلاعات مطمئنید؟'))return;
+  await clearStore('passengers');await clearStore('drivers');await clearStore('shifts');
+  await load();renderAll();toast('همه داده‌ها پاک شد');}
+
+/* ============ Load & Init ============ */
+async function load(){
+  passengers = await getAll('passengers');
+  drivers = await getAll('drivers');
+  shifts = await getAll('shifts');
+}
+function renderAll(){
+  updateHomeStats();
+  renderShifts();
+  renderDrivers();
+  renderPassengers();
+  renderStats();
+}
+
+// Event Listeners for Menus
+document.querySelectorAll('[data-go]').forEach(el => {
+  el.addEventListener('click', () => go(el.dataset.go));
+});
+document.querySelectorAll('.chip[data-sort]').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-sort]').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    curSort = el.dataset.sort;
+    renderPassengers();
+  });
+});
+document.getElementById('backupBtn').onclick = () => go('manage');
+
+// Start App
+(async()=>{
+  await openDB();
+  await load();
+  renderAll();
+  document.getElementById('todayDate').textContent = jalaliNow().str;
+  let hash = location.hash.replace('#','');
+  if(TITLES[hash]) go(hash, false);
+  else history.replaceState({view:'home'},'', '#home');
+})();
+</script>
+</body>
+</html>
