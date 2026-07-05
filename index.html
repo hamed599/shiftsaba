@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#0F0F1A" />
 <title>sabashift</title>
 <link rel="manifest" href="manifest.json" />
-<link rel="apple-touch-icon" href="newicon.png" />
-<link rel="icon" type="image/png" href="newicon.png" />
+<link rel="apple-touch-icon" href="icon-512.png" />
+<link rel="icon" type="image/png" href="icon-192.png" />
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 <style>
@@ -235,7 +235,7 @@ body.light-theme .overlay{background:rgba(0,0,0,0.4)}
 
 <header class="appbar">
   <button class="icon-btn back-btn" id="backBtn" aria-label="back"><i class="fa-solid fa-arrow-right"></i></button>
-  <div class="logo"><img src="newicon.png" alt="logo" /></div>
+  <div class="logo"><img src="icon-512.png" alt="logo" /></div>
   <div class="titlewrap">
     <h1 id="appTitle">sabashift</h1>
     <div class="date" id="todayDate"></div>
@@ -834,8 +834,17 @@ document.getElementById('backupBtn').onclick = () => go('manage');
   renderAll();
   document.getElementById('todayDate').textContent = jalaliNow().str;
   let hash = location.hash.replace('#','');
-  if(TITLES[hash]) go(hash, false);
-  else history.replaceState({view:'home'},'', '#home');
+  if(TITLES[hash]){
+    go(hash, false);
+  } else {
+    history.replaceState({view:'home'},'', '#home');
+    current='home';
+  }
+  /* پله‌ی اضافه در تاریخچه: بدون این خط، اولین بک روی صفحه‌ی خانه
+     به‌جای نمایش پیام تأیید خروج، مستقیم از اپ خارج می‌شود */
+  if(current==='home'){
+    history.pushState({view:'home'},'', '#home');
+  }
 })();
 </script>
 </body>
